@@ -1,0 +1,19 @@
+[Unit]
+Description=DocumentDB Prometheus Exporter
+Wants=network-online.target
+After=network.target network-online.target
+
+[Service]
+Environment=DOCDB_EXPORTER_MONGODB_URI=mongodb://localhost:27017
+Environment=DOCDB_EXPORTER_MONGODB_DBNAME=local
+Environment=DOCDB_EXPORTER_METRIC_PREFIX=docdb
+Environment=DOCDB_EXPORTER_HTTP_ADDR=:8080
+Environment=DOCDB_EXPORTER_COLLECT_INTERVAL=1m
+ExecStart=/opt/docdb_exporter/docdb_exporter
+LimitNOFILE=131072
+WorkingDirectory=/opt/docdb_exporter
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
