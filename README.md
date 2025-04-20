@@ -33,3 +33,33 @@ The exporter collects the following metrics:
 | docdb_collection_shard_storage_size | Storage size of the collection shards |
 | docdb_collection_shard_collscans | Number of collection scans in the shards |
 | docdb_collection_shard_idx_scans | Number of index scans in the shards |
+
+| Metric Name | Description |
+|------------|-------------|
+| docdb_database_name | Connected database name  |
+| docdb_database_collection_count | Number of collection in database  |
+| docdb_database_objects_count | Number of objects in database  |
+| docdb_database_storage_size | Size of the database on disk |
+| docdb_database_indexes_count | Number of indexes in the database |
+| docdb_database_index_size | Total size of indexes in the database |
+| docdb_database_file_size | Size of the database files |
+
+| Metric Name | Description |
+|------------|-------------|
+| docdb_shard_uptime | Uptime of the shard (Second) |
+| docdb_shard_collection_total_op_time | Total operation time of the shard |
+| docdb_shard_collection_total_op_count | Total operation count of the shard |
+| docdb_shard_collection_insert_time | Insert operation time of the shard |
+| docdb_shard_collection_insert_op_count | Insert operation count of the shard |
+| docdb_shard_collection_update_time | Update operation time of the shard |
+| docdb_shard_collection_update_op_count | Update operation count of the shard |
+| docdb_shard_collection_remove_time | Remove operation time of the shard |
+| docdb_shard_collection_remove_op_count | Remove operation count of the shard |
+| docdb_shard_collection_query_time | Query operation time of the shard |
+| docdb_shard_collection_query_op_count | Query operation count of the shard |
+| docdb_shard_collection_get_more_time | GetMore operation time of the shard |
+| docdb_shard_collection_getmore_op_count | GetMore operation count of the shard |
+| docdb_shard_collection_command_time | Command operation time of the shard |
+| docdb_shard_collection_command_op_count | Command operation count of the shard |
+
+Note: operation time is millisecond.
