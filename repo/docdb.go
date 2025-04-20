@@ -69,3 +69,22 @@ func (d *Docdb) CollectionNames() ([]string, error) {
 	}
 	return collections, nil
 }
+
+func (d *Docdb) DatabaseStat() (output DBStatsOutput, err error) {
+	command := bson.D{{"dbStats", 1}, {"scale", 1000000}}
+	err = d.db.RunCommand(context.TODO(), command).Decode(&output)
+	if err != nil {
+		return output, err
+	}
+	return output, err
+}
+
+func (d *Docdb) Top() (output TopOutput, err error) {
+	command := bson.D{{"top", 1}}
+
+	err = d.client.Database("admin").RunCommand(context.TODO(), command).Decode(&output)
+	if err != nil {
+		return output, err
+	}
+	return output, err
+}

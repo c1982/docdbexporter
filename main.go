@@ -69,6 +69,29 @@ func main() {
 }
 
 func collect() {
+	dbStats()
+	collectionStats()
+	collectTop()
+	fmt.Printf("Metrics collected %s\n", time.Now().Format(time.RFC3339))
+}
+
+func dbStats() {
+	stats, err := docdb.DatabaseStat()
+	if err != nil {
+		fmt.Printf("Error getting database stats: %v\n", err)
+		return
+	}
+
+	exporter.DatabaseNameMetric.Set(1, stats.DB)
+	exporter.DatabaseCollectionCountMetric.Set(float64(stats.Collections), stats.DB)
+	exporter.DatabaseObjectsCountMetric.Set(stats.Objects, stats.DB)
+	exporter.DatabaseStorageSizeMetric.Set(stats.StorageSize, stats.DB)
+	exporter.DatabaseIndexesCountMetric.Set(float64(stats.Indexes), stats.DB)
+	exporter.DatabaseIndexSizeMetric.Set(stats.IndexSize, stats.DB)
+	exporter.DatabaseFileSizeMetric.Set(stats.FileSize, stats.DB)
+}
+
+func collectionStats() {
 	names, err := docdb.CollectionNames()
 	if err != nil {
 		fmt.Printf("Error getting collection names: %v\n", err)
@@ -128,10 +151,35 @@ func collect() {
 			exporter.IndexSizesMetric.Set(size, name, index)
 		}
 	}
-
-	fmt.Printf("Metrics collected %s\n", time.Now().Format(time.RFC3339))
 }
 
+func collectTop() {
+	top, err := docdb.Top()
+	if err != nil {
+		fmt.Printf("Error getting top: %v\n", err)
+		return
+	}
+	for _, shard := range top.Top {
+		exporter.ShardUptimeMetric.Set(float64(shard.UptimeInSeconds), shard.ShardName)
+
+		for k, collection := range shard.Totals {
+			exporter.ShardCollectionTotalOpTimeMetric.Set(float64(collection.Total.Time), shard.ShardName, k)
+			exporter.ShardCollectionTotalOpCountMetric.Set(float64(collection.Total.Count), shard.ShardName, k)
+			exporter.ShardCollectionInsertTimeMetric.Set(float64(collection.Insert.Time), shard.ShardName, k)
+			exporter.ShardCollectionInsertOpCountMetric.Set(float64(collection.Insert.Count), shard.ShardName, k)
+			exporter.ShardCollectionUpdateTimeMetric.Set(float64(collection.Update.Time), shard.ShardName, k)
+			exporter.ShardCollectionUpdateOpCountMetric.Set(float64(collection.Update.Count), shard.ShardName, k)
+			exporter.ShardCollectionRemoveTimeMetric.Set(float64(collection.Remove.Time), shard.ShardName, k)
+			exporter.ShardCollectionRemoveOpCountMetric.Set(float64(collection.Remove.Count), shard.ShardName, k)
+			exporter.ShardCollectionQueryTimeMetric.Set(float64(collection.Queries.Time), shard.ShardName, k)
+			exporter.ShardCollectionQueryOpCountMetric.Set(float64(collection.Queries.Count), shard.ShardName, k)
+			exporter.ShardCollectionGetMoreTimeMetric.Set(float64(collection.Getmore.Time), shard.ShardName, k)
+			exporter.ShardCollectionGetMoreOpCountMetric.Set(float64(collection.Getmore.Count), shard.ShardName, k)
+			exporter.ShardCollectionCommandTimeMetric.Set(float64(collection.Commands.Time), shard.ShardName, k)
+			exporter.ShardCollectionCommandOpCountMetric.Set(float64(collection.Commands.Count), shard.ShardName, k)
+		}
+	}
+}
 func getHost(uri string) string {
 	parsedURI, err := url.Parse(uri)
 	if err != nil {

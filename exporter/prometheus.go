@@ -40,6 +40,7 @@ func (p *PrometheusExporter) CollectMetricsPeriodically(interval time.Duration, 
 	time.AfterFunc(interval, func() {
 		fn()
 		p.CollectMetricsPeriodically(interval, fn)
+
 	})
 }
 
